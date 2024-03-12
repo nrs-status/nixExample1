@@ -2,10 +2,13 @@ FROM bitnami/pytorch
 
 WORKDIR /workdir
 
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
 #integrate these to requirements and clean unused requirements eventually
+RUN pip install transformers
+RUN pip install datasets
+RUN pip install tqdm
+RUN pip install pytorch_lightning
+RUN pip install mlflow
+RUN pip install memray
 RUN pip install scalene
 RUN pip install memory_profiler
 RUN pip install guppy3
@@ -13,15 +16,17 @@ RUN pip install graphviz
 RUN pip install objgraph
 RUN pip install ipdb
 
-COPY bert.py .
-COPY models ./models
-COPY data ./data
-
-
-
-ENV SENTENCE_TRANSFORMERS_HOME=/workdir/.cache
-
 USER root
+RUN apt update
+RUN apt upgrade
+RUN apt install -y curl
+RUN curl -L -o bert.py https://raw.githubusercontent.com/nrs-status/shared/main/bert.py
+RUN mkdir data
+RUN curl -L -o data/imps.txt https://raw.githubusercontent.com/nrs-status/shared/main/data/imps.txt
+RUN curl -L -o data/decls.txt https://raw.githubusercontent.com/nrs-status/shared/main/data/decls.txt
+
+
+
 RUN adduser --disabled-password --gecos '' appuser
 RUN chown -R appuser:appuser /workdir
 
@@ -31,7 +36,7 @@ RUN chown -R appuser:appuser /.cache
 RUN touch /.pdbhistory
 RUN chown -R appuser:appuser /.pdbhistory
 
-
 USER appuser
 
-ENTRYPOINT ["/bin/sh"]
+ENV SENTENCE_TRANSFORMERS_HOME=/workdir/.cache
+ENTRYPOINT ["memray", "run", "bert.py"]
