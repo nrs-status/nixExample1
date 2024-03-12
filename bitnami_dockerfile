@@ -1,0 +1,37 @@
+FROM bitnami/pytorch
+
+WORKDIR /workdir
+
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+#integrate these to requirements and clean unused requirements eventually
+RUN pip install scalene
+RUN pip install memory_profiler
+RUN pip install guppy3
+RUN pip install graphviz
+RUN pip install objgraph
+RUN pip install ipdb
+
+COPY bert.py .
+COPY models ./models
+COPY data ./data
+
+
+
+ENV SENTENCE_TRANSFORMERS_HOME=/workdir/.cache
+
+USER root
+RUN adduser --disabled-password --gecos '' appuser
+RUN chown -R appuser:appuser /workdir
+
+RUN mkdir /.cache
+RUN chown -R appuser:appuser /.cache
+
+RUN touch /.pdbhistory
+RUN chown -R appuser:appuser /.pdbhistory
+
+
+USER appuser
+
+ENTRYPOINT ["/bin/sh"]
