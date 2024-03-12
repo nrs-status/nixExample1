@@ -1,6 +1,0 @@
-transformers
-datasets
-tqdm
-pytorch_lightning
-mlflow
-memray

@@ -7,8 +7,14 @@ import os
 import torch
 from torch import cuda
 import time
-from guppy import hpy
 import tracemalloc
+import gc
+
+gc.set_debug(gc.DEBUG_COLLECTABLE)
+gc.set_debug(gc.DEBUG_UNCOLLECTABLE)
+#gc.set_debug(gc.DEBUG_SAVEALL)
+print("ig")
+print(gc.get_debug())
 
 device = 'cuda' if cuda.is_available() else 'cpu'
 device = 'cpu'
@@ -35,7 +41,7 @@ tokenizer = DistilBertTokenizerFast.from_pretrained('distilbert-base-uncased')
 MAX_LEN = 64
 TRAIN_BATCH_SIZE = 8
 VALID_BATCH_SIZE = 8
-EPOCHS = 3
+EPOCHS = 1000
 LEARNING_RATE = 1e-03
 CHECKPOINT_INTERVAL = 4
 
@@ -131,6 +137,7 @@ def object_profiler(myobj):
     #mylocs.append(hpy().heap())
     #breakpoint()
 
+
     
 
 
@@ -161,7 +168,7 @@ import pstats
 # Add a classification head on top of the frozen DistilBertModel
 class DistilBertClassifier(torch.nn.Module):
     def __init__(self, distilbert_model):
-        super().__init__()
+        super(DistilBertClassifier, self).__init__()
         self.distilbert = distilbert_model
         self.dropout = torch.nn.Dropout(DROPOUT)
         self.classifier = nn.Linear(self.distilbert.config.hidden_size, 2)  #  Binary classification
@@ -193,7 +200,8 @@ class DistilBertClassifier(torch.nn.Module):
         #stats = pstats.Stats(profiler).sort_stats('tottime')
         #stats.print_stats()
         #mylocs.append(tracemalloc.take_snapshot())
-        breakpoint()
+        #breakpoint()
+  
         return logits
 
 # Create an instance of the DistilBertClassifier
