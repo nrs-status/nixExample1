@@ -2,8 +2,8 @@ FROM bitnami/pytorch
 
 WORKDIR /workdir
 
-COPY requirements.txt .
-RUN pip3 install -r requirements.txt
+
+RUN pip3 install transformers datasets tqdm pytorch_lightning mlflow
 
 #integrate these to requirements and clean unused requirements eventually
 RUN pip3 install memory_profiler guppy3 graphviz objgraph ipdb memray
